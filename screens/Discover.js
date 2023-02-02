@@ -1,20 +1,49 @@
-import { Text,Image, ScrollView,StyleSheet, View, ImageBackground, TouchableOpacity } from 'react-native'
-import React, { useLayoutEffect, useState} from 'react'
+import { Text,Image, ScrollView,StyleSheet, View, ImageBackground, TouchableOpacity, ActivityIndicator } from 'react-native'
+import React, { useEffect, useLayoutEffect, useState} from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
 import * as Animatable from 'react-native-animatable';
 import PlacesInput from 'react-native-places-input';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { StatusBar } from 'expo-status-bar';
 import { OIP } from '../assets';
 import MenuContainer from '../components/MenuContainer';
 import { Hotels, Attractions, Restaurants } from '../assets';
 import { AntDesign } from '@expo/vector-icons'; 
 import ItemContainer from '../components/ItemContainer';
+import { NotFound } from '../assets';
+import { SelectList } from 'react-native-dropdown-select-list'
+import { getPlacesData } from '../api';
+import { HeroImage } from '../assets';
+
+
 
 const Discover = () => {
     const navigation = useNavigation();
-    const api= "AIzaSyB8VAen9sTuu4OzwCx1oglAFyly6PDzlpw";
+    const api= "AIzaSyARl5WODzlrzS0VTj2CRtu9GeDVh9i4tD0";
     const [type, setType] = useState('restaurants')
+    const [isLoading, setIsLoading] = useState(true)
+    const [mainData, setMainData] = useState(null);
+    const [selected, setSelected] = React.useState("");
+
+    const cityList = [
+        {key:'1', value:'California', },
+        {key:'2', value:'Tokyo'},
+        {key:'3', value:'Seul'},
+        {key:'4', value:'Bangkok', },
+        {key:'5', value:'Taipei'},
+    ]
+
+    useEffect(()=>{
+        setIsLoading(true);
+        getPlacesData().then(data=>{
+            setMainData(data);
+   
+        }).catch(err=>console.log(err))
+        setInterval(()=>{
+            setIsLoading(false)
+        }, 2000)
+    },[])
     
   return (
     <SafeAreaView className='flex-1 bg-white relative'>
@@ -28,21 +57,31 @@ const Discover = () => {
             </View>
         </View>
         <View
-        className='flex-row items-center bg-white mx-2 rounded-xl py-1 px-4 shadow-lg  mt-2 w-full  '
+        className='flex-row items-center justify-center mx-2 rounded-xl py-1 px-4 shadow-lg  mt-2 w-full  '
          >
-            <PlacesInput 
-            googleApiKey={api}
-            placeHolder="where to go?"
-            onSelect={place => console.log(place)}
-            language="en"
-            />
+            <SelectList 
+                boxStyles={{width:250}}
+                setSelected={(val) => setSelected(val)} 
+                data={cityList} 
+                save="value"
+                placeholder='Which city to go?'
+            />    
         
 
         </View>
 
         {/* menu options */}
-        <ScrollView className='mt-16 '>
+        {
+            isLoading?
+            <View className='flex-1 items-center justify-center'>
+                <Text className='text-[24px] font-semibold text-[#0B646B]/50'>Loading</Text>
+                <ActivityIndicator size='large' color = '#0B646B' />
+            </View>
+            : 
+            <ScrollView className='mt-4 '>
             <View className='flex-row items-center justify-between px-8 '>
+              
+
                 <MenuContainer 
                     key={'hotel'}
                     title='Hotels'
@@ -77,12 +116,35 @@ const Discover = () => {
             </View>
 
             <View className='px-4 mt-6 flex-row items-center justify-evenly flex-wrap' >
-                <ItemContainer key={'101'} imageSrc={'https://cdn.pixabay.com/photo/2023/01/26/04/51/hummingbird-7745078_960_720.jpg'} title="Humingbfdfdfdddddird" location="New York"/>
-                <ItemContainer key={'102'} imageSrc={'https://cdn.pixabay.com/photo/2023/01/26/04/51/hummingbird-7745078_960_720.jpg'} title="Calif" location="Calif"/>
-            
+            {mainData?.length>0 ? 
+                <> 
+                {mainData?.map((item,i)=>{
+                    return (
+                        <ItemContainer 
+                        key={i}
+                        imageSrc={item?.photo?.images?.small?.url ? item?.photo?.images?.small?.url : "https://i.pinimg.com/originals/39/f1/51/39f151cdc918fbf0ab8052aacd36abfa.jpg" }  
+                        title = {item?.name}
+                        location = {item?.location_string}      
+                        data = {item}                   
+                        
+                        />
+                    )
+                })} 
+                </>    
+            :
+                <>
+                <View className='w-full h-[360px]  items-center justify-center'>
+                    <Image className='w-32 h-32 object-cover' source={NotFound}/>
+                    <Text className='text-[#0b646B]/70 text-[16px] font-bold mt-8'>Oops! Couldn't find any place</Text>
+                </View>
+                </>
+            }
+                
             </View>
 
         </ScrollView>
+        }
+        
       
       <StatusBar style="dark" />
     </SafeAreaView>

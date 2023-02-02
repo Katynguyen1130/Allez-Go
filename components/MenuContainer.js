@@ -1,7 +1,7 @@
 import { View,Image, Text, TouchableOpacity } from 'react-native'
 import React from 'react'
 
-const MenuContainer = ( {key, title,imageSrc,type,setType,}) => {
+const MenuContainer = ( { title,imageSrc,type,setType,}) => {
     const handleChangeType=()=>{
         setType(title.toLowerCase())
     }

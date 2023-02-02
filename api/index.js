@@ -5,10 +5,10 @@ export const getPlacesData= async () => {
     try {
        const {data:{data}} = await axios.get(`https://travel-advisor.p.rapidapi.com/restaurants/list-in-boundary`, 
         {params: {
-            bl_latitude: '11.847676',
-            tr_latitude: '12.838442',
-            bl_longitude: '109.095887',
-            tr_longitude: '109.149359',
+            bl_latitude: '1.469155',
+            tr_latitude: '1.625253',
+            bl_longitude: '103.636525',
+            tr_longitude: '104.025236',
             limit: '30',
             lunit: 'km',
             currency: 'USD',

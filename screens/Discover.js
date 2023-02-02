@@ -20,14 +20,14 @@ import { HeroImage } from '../assets';
 
 const Discover = () => {
     const navigation = useNavigation();
-    const api= "AIzaSyARl5WODzlrzS0VTj2CRtu9GeDVh9i4tD0";
+   
     const [type, setType] = useState('restaurants')
     const [isLoading, setIsLoading] = useState(true)
     const [mainData, setMainData] = useState(null);
     const [selected, setSelected] = React.useState("");
 
     const cityList = [
-        {key:'1', value:'California', },
+        {key:'1', value:'Singapore', },
         {key:'2', value:'Tokyo'},
         {key:'3', value:'Seul'},
         {key:'4', value:'Bangkok', },
